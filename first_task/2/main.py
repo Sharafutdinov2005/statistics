@@ -314,13 +314,13 @@ def bootstrap_median(
 def main():
     sample = generate_sample(F_reversed)
 
-    # x_min, x_max = np.min(sample), np.max(sample)
-    # x_range = x_max - x_min
+    x_min, x_max = np.min(sample), np.max(sample)
+    x_range = x_max - x_min
 
-    # save_stats(sample, x_range)
-    # save_plots(sample, x_min, x_max, x_range)
-    # bootstrap_mean_valuation_compasrion(sample)
-    # bootstrap_skewness(sample)
+    save_stats(sample, x_range)
+    save_plots(sample, x_min, x_max, x_range)
+    bootstrap_mean_valuation_compasrion(sample)
+    bootstrap_skewness(sample)
     bootstrap_median(sample)
 
 
