@@ -3,14 +3,10 @@ import numpy as np
 from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
 from statistics import multimode
-from scipy.stats import moment
+from scipy.stats import moment, bootstrap, Normal
 import json
 from matplotlib import pyplot as plt
 
-# @TODO:
-# 1) эмпирическая ф-я распределения
-# 2) сравнить оценку плотности распределения среднего
-#  арифметического ЦПТ и bootstrap
 
 # ============= TASK CONFIG ===============
 # Mersenne twister init
@@ -33,6 +29,7 @@ def F(
 def F_reversed(
     P: np.ndarray
 ) -> np.ndarray:
+    # can't get 1, but it doesn't matter
     if np.any(P == 0):
         return -np.inf * np.ones_like(P)
     return -np.log(1-P)
@@ -162,6 +159,45 @@ def save_plots(
     save_boxplot(sample)
 
 
+def mean_valuation_compasrion(
+    sample: np.ndarray,
+) -> None:
+    n = 1000
+    bootstrap_result = bootstrap(
+        (sample,),
+        statistic=np.mean,
+        n_resamples=n,
+        rng=GENERATOR
+    )
+    CPT_result = Normal(mu=1, sigma=1/5)  # class uses sigma, not sigma^2
+
+    fig, ax = plt.subplots()
+
+    new_sample = bootstrap_result.bootstrap_distribution.reshape(-1)
+    x_min, x_max = new_sample.min(), new_sample.max()
+    x_range = x_max - x_min
+
+    k = int(1 + np.log2(new_sample.size))
+    # mu_i = m_i / n / delta
+    w = np.ones_like(new_sample) * 1 / (x_range / k) / new_sample.size
+    x = np.linspace(x_min - 0.5 * x_range, x_max + 0.5 * x_range, num=1000)
+    y = CPT_result.pdf(x)
+
+    ax.hist(new_sample, bins=k, weights=w, label='Bootstrap')
+    ax.plot(x, y, color='r', label='CPT', linewidth=1, ls='--')
+    ax.set_title('Bootstrap vs CPT')
+    ax.grid(True)
+
+    ax.set_ylabel("Bootstrap, CPT")
+    ax.set_xlabel("x")
+
+    ax.set_xlim(x_min - 0.5 * x_range, x_max + 0.5 * x_range)
+
+    ax.legend()
+
+    fig.savefig(r"first_task\2\plots\bootstrap_vs_cpt.png")
+
+
 def main():
     sample = generate_sample(F_reversed)
 
@@ -170,6 +206,7 @@ def main():
 
     save_stats(sample, x_range)
     save_plots(sample, x_min, x_max, x_range)
+    mean_valuation_compasrion(sample)
 
 
 if __name__ == "__main__":
