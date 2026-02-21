@@ -164,9 +164,11 @@ def save_plots(
 
 def main():
     sample = generate_sample(F_reversed)
+
     x_min, x_max = np.min(sample), np.max(sample)
     x_range = x_max - x_min
-    # save_stats(sample, x_range)
+
+    save_stats(sample, x_range)
     save_plots(sample, x_min, x_max, x_range)
 
 
