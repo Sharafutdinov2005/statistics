@@ -4,13 +4,14 @@ from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
 from statistics import multimode
 from scipy.stats import moment, bootstrap, Normal, skew
+from scipy.special import comb
 import json
 from matplotlib import pyplot as plt
 
 
 # ============= TASK CONFIG ===============
 # Mersenne twister init
-SEED = 2
+SEED = 25  # also I've used 25
 GENERATOR = RandomState(MT19937(SeedSequence(SEED)))
 
 
@@ -34,6 +35,27 @@ def F_reversed(
     if np.any(P == 0):
         return -np.inf * np.ones_like(P)
     return -np.log(1-P)
+
+
+def p_median(
+    x: np.ndarray,
+) -> np.ndarray:
+    x = np.asarray(x)
+    i_vals = np.arange(13, 26)
+    comb_vals = comb(25, i_vals)
+    exp_neg_x = np.exp(-x)
+    one_minus_exp = 1 - exp_neg_x
+    x_expanded = x[..., np.newaxis]
+    one_minus_exp_expanded = one_minus_exp[..., np.newaxis]
+    term1 = (i_vals *
+             (one_minus_exp_expanded) ** (i_vals - 1) *
+             np.exp(-(26 - i_vals) * x_expanded))
+    term2 = ((one_minus_exp_expanded) ** i_vals *
+             (-(25 - i_vals)) *
+             np.exp(-(25 - i_vals) * x_expanded))
+    total = comb_vals * (term1 + term2)
+    result = np.sum(total, axis=-1)
+    return result
 
 
 # ============ AUXILIARY FUNCTIONS ==========
@@ -231,6 +253,7 @@ def bootstrap_skewness(
 
     ax.hist(new_sample, bins=k, weights=w, label='Bootstrap')
     ax.set_title('Bootstrap Skewness evaluation')
+    ax.grid(True)
 
     ax.set_ylabel("Bootstrap")
     ax.set_xlabel("x")
@@ -247,16 +270,58 @@ def bootstrap_skewness(
     )
 
 
+def bootstrap_median(
+    sample: np.ndarray
+) -> None:
+    n = 100
+    bootstrap_result = bootstrap(
+        (sample,),
+        statistic=np.median,
+        n_resamples=n,
+        rng=GENERATOR
+    )
+
+    fig, ax = plt.subplots()
+
+    new_sample = bootstrap_result.bootstrap_distribution.reshape(-1)
+    x_min, x_max = new_sample.min(), new_sample.max()
+    x_range = x_max - x_min
+
+    k = int(1 + np.log2(new_sample.size))
+    # mu_i = m_i / n / delta
+    w = np.ones_like(new_sample) * 1 / (x_range / k) / new_sample.size
+
+    x = np.linspace(x_min - 0.5 * x_range, x_max + 0.5 * x_range, num=1000)
+    y = p_median(x)
+
+    ax.hist(new_sample, bins=k, weights=w, label='Bootstrap')
+    ax.plot(x, y, color='r', label='p_median', linewidth=1, ls='--')
+    ax.set_title('Bootstrap Median evaluation')
+    ax.grid(True)
+
+    ax.set_ylabel("Bootstrap, p_median(x)")
+    ax.set_xlabel("x")
+
+    ax.set_xlim(x_min - 0.5 * x_range, x_max + 0.5 * x_range)
+
+    ax.legend()
+
+    fig.savefig(
+        rf"first_task\2\plots\bootstrap_median\median_seed({SEED})"
+    )
+
+
 def main():
     sample = generate_sample(F_reversed)
 
-    x_min, x_max = np.min(sample), np.max(sample)
-    x_range = x_max - x_min
+    # x_min, x_max = np.min(sample), np.max(sample)
+    # x_range = x_max - x_min
 
-    save_stats(sample, x_range)
-    save_plots(sample, x_min, x_max, x_range)
-    bootstrap_mean_valuation_compasrion(sample)
-    bootstrap_skewness(sample)
+    # save_stats(sample, x_range)
+    # save_plots(sample, x_min, x_max, x_range)
+    # bootstrap_mean_valuation_compasrion(sample)
+    # bootstrap_skewness(sample)
+    bootstrap_median(sample)
 
 
 if __name__ == "__main__":
