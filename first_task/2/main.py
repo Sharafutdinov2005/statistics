@@ -7,6 +7,10 @@ from scipy.stats import moment
 import json
 # from matplotlib import pyplot as plt
 
+# @TODO:
+# 1) эмпирическая ф-я распределения
+# 2) сравнить оценку плотности распределения среднего
+#  арифметического ЦПТ и bootstrap
 
 # ============= TASK CONFIG ===============
 # Mersenne twister init
@@ -50,7 +54,7 @@ def calculate_stats(
 ) -> Dict:
     stats = dict()
 
-    stats["mode"] = multimode(sample)
+    stats["mode"] = multimode(sample)  # all elems are mode
     stats["median"] = float(np.median(sample))
     stats["range"] = float(np.max(sample) - np.min(sample))
     stats["skewness"] = moment(sample, 3) / moment(sample, 2) ** 1.5
@@ -68,9 +72,7 @@ def save_stats(
 
 
 def main():
-    # sample generating
     sample = generate_sample(F_reversed)
-
     save_stats(sample)
 
 
