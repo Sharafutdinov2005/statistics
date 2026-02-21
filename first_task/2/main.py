@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 # ============= TASK CONFIG ===============
 # Mersenne twister init
-SEED = 2  # also I've used 25
+SEED = 2  # also I've used 25 on bootstrap tasks
 GENERATOR = RandomState(MT19937(SeedSequence(SEED)))
 
 
