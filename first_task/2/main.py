@@ -124,12 +124,12 @@ def save_hist(
     x = np.linspace(x_min - 0.5 * x_range, x_max + 0.5 * x_range, num=1000)
     y = p(x)
 
-    ax.hist(sample, bins=k, weights=w, label='distribution density evaluation')
+    ax.hist(sample, bins=k, weights=w, label='Histogramm')
     ax.plot(x, y, color='r', label='p(x)', linewidth=1, ls='--')
-    ax.set_title('Distribution density comparsion')
+    ax.set_title('Histogramm')
     ax.grid(True)
 
-    ax.set_ylabel("histogramm, distribution density")
+    ax.set_ylabel("Histogramm, p(x)")
     ax.set_xlabel("x")
 
     ax.set_xlim(x_min - 0.5 * x_range, x_max + 0.5 * x_range)
@@ -137,7 +137,18 @@ def save_hist(
 
     ax.legend()
 
-    fig.savefig(r"first_task\2\plots\distribution_dens_comp.png")
+    fig.savefig(r"first_task\2\plots\hist.png")
+
+
+def save_boxplot(
+    sample: np.ndarray,
+) -> None:
+
+    fig, ax = plt.subplots()
+
+    ax.boxplot(sample, orientation='horizontal')
+
+    fig.savefig(r"first_task\2\plots\boxplot.png")
 
 
 def save_plots(
@@ -146,9 +157,9 @@ def save_plots(
     x_max: np.float64,
     x_range: np.float64
 ) -> None:
-    # save_emp_distrib_func(sample, x_min, x_max, x_range)
+    save_emp_distrib_func(sample, x_min, x_max, x_range)
     save_hist(sample, x_min, x_max, x_range)
-    # save_boxplot(sample)
+    save_boxplot(sample)
 
 
 def main():
