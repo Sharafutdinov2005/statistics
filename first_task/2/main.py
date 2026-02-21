@@ -10,7 +10,8 @@ from matplotlib import pyplot as plt
 
 # ============= TASK CONFIG ===============
 # Mersenne twister init
-GENERATOR = RandomState(MT19937(SeedSequence(2)))
+SEED = 2
+GENERATOR = RandomState(MT19937(SeedSequence(SEED)))
 
 
 # ======== PROBABILITY FUNCTIONS ==========
@@ -195,7 +196,9 @@ def bootstrap_mean_valuation_compasrion(
 
     ax.legend()
 
-    fig.savefig(r"first_task\2\plots\bootstrap_vs_cpt\bootstrap_vs_cpt.png")
+    fig.savefig(
+        rf"first_task\2\plots\bootstrap_vs_cpt\bootstrap_vs_cpt_seed{SEED}.png"
+    )
 
 
 def bootstrap_skewness(
@@ -239,7 +242,9 @@ def bootstrap_skewness(
     # not the best solution, but...
     ax.text(-2, 0.4, f"F_emp_skew(1) = {round(F_emp(np.ones(1))[0], 2)}")
 
-    fig.savefig(r"first_task\2\plots\bootstrap_skewness\skewness.png")
+    fig.savefig(
+        rf"first_task\2\plots\bootstrap_skewness\skewness_seed{SEED}.png"
+    )
 
 
 def main():
@@ -248,9 +253,9 @@ def main():
     x_min, x_max = np.min(sample), np.max(sample)
     x_range = x_max - x_min
 
-    # save_stats(sample, x_range)
-    # save_plots(sample, x_min, x_max, x_range)
-    # bootstrap_mean_valuation_compasrion(sample)
+    save_stats(sample, x_range)
+    save_plots(sample, x_min, x_max, x_range)
+    bootstrap_mean_valuation_compasrion(sample)
     bootstrap_skewness(sample)
 
 
