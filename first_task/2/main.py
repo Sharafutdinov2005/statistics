@@ -197,7 +197,7 @@ def bootstrap_mean_valuation_compasrion(
     ax.legend()
 
     fig.savefig(
-        rf"first_task\2\plots\bootstrap_vs_cpt\bootstrap_vs_cpt_seed{SEED}.png"
+        rf"first_task\2\plots\bootstrap_vs_cpt\bootstrap_vs_cpt_seed({SEED})"
     )
 
 
@@ -243,7 +243,7 @@ def bootstrap_skewness(
     ax.text(-2, 0.4, f"F_emp_skew(1) = {round(F_emp(np.ones(1))[0], 2)}")
 
     fig.savefig(
-        rf"first_task\2\plots\bootstrap_skewness\skewness_seed{SEED}.png"
+        rf"first_task\2\plots\bootstrap_skewness\skewness_seed({SEED})"
     )
 
 
