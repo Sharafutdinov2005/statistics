@@ -3,7 +3,7 @@ import numpy as np
 from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
 from statistics import multimode
-from scipy.stats import moment, bootstrap, Normal
+from scipy.stats import moment, bootstrap, Normal, skew
 import json
 from matplotlib import pyplot as plt
 
@@ -103,7 +103,7 @@ def save_emp_distrib_func(
 
     ax.legend()
 
-    fig.savefig(r"first_task\2\plots\distribution_func_comp.png")
+    fig.savefig(r"first_task\2\plots\EDF.png")
 
 
 def save_hist(
@@ -159,7 +159,7 @@ def save_plots(
     save_boxplot(sample)
 
 
-def mean_valuation_compasrion(
+def bootstrap_mean_valuation_compasrion(
     sample: np.ndarray,
 ) -> None:
     n = 1000
@@ -195,7 +195,51 @@ def mean_valuation_compasrion(
 
     ax.legend()
 
-    fig.savefig(r"first_task\2\plots\bootstrap_vs_cpt.png")
+    fig.savefig(r"first_task\2\plots\bootstrap_vs_cpt\bootstrap_vs_cpt.png")
+
+
+def bootstrap_skewness(
+    sample: np.ndarray,
+) -> None:
+    n = 1000
+    bootstrap_result = bootstrap(
+        (sample,),
+        statistic=skew,
+        n_resamples=n,
+        rng=GENERATOR
+    )
+
+    fig, ax = plt.subplots()
+
+    new_sample = bootstrap_result.bootstrap_distribution.reshape(-1)
+    x_min, x_max = new_sample.min(), new_sample.max()
+    x_range = x_max - x_min
+
+    def F_emp(
+        x: np.ndarray
+    ) -> np.ndarray:
+        n = new_sample.size
+        values = new_sample.copy().reshape(1, -1)
+        return (x[:, np.newaxis] > values).sum(axis=-1) / n
+
+    k = int(1 + np.log2(new_sample.size))
+    # mu_i = m_i / n / delta
+    w = np.ones_like(new_sample) * 1 / (x_range / k) / new_sample.size
+
+    ax.hist(new_sample, bins=k, weights=w, label='Bootstrap')
+    ax.set_title('Bootstrap Skewness evaluation')
+
+    ax.set_ylabel("Bootstrap")
+    ax.set_xlabel("x")
+
+    ax.set_xlim(x_min - 0.5 * x_range, x_max + 0.5 * x_range)
+
+    ax.legend()
+
+    # not the best solution, but...
+    ax.text(-2, 0.4, f"F_emp_skew(1) = {round(F_emp(np.ones(1))[0], 2)}")
+
+    fig.savefig(r"first_task\2\plots\bootstrap_skewness\skewness.png")
 
 
 def main():
@@ -204,9 +248,10 @@ def main():
     x_min, x_max = np.min(sample), np.max(sample)
     x_range = x_max - x_min
 
-    save_stats(sample, x_range)
-    save_plots(sample, x_min, x_max, x_range)
-    mean_valuation_compasrion(sample)
+    # save_stats(sample, x_range)
+    # save_plots(sample, x_min, x_max, x_range)
+    # bootstrap_mean_valuation_compasrion(sample)
+    bootstrap_skewness(sample)
 
 
 if __name__ == "__main__":
