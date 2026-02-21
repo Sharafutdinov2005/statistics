@@ -46,6 +46,7 @@ def generate_sample(
     """
     Function model sample with `lenght` values of continuous random variable.
     """
+    # can't be 1, but it doesn't matter
     return reversed_distribution_function(GENERATOR.rand(size))
 
 
