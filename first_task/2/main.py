@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 # ============= TASK CONFIG ===============
 # Mersenne twister init
-SEED = 2  # also I've used 25 on bootstrap tasks
+SEED = 2
 GENERATOR = RandomState(MT19937(SeedSequence(SEED)))
 
 
@@ -218,9 +218,7 @@ def bootstrap_mean_valuation_compasrion(
 
     ax.legend()
 
-    fig.savefig(
-        rf"first_task\2\plots\bootstrap_vs_cpt\bootstrap_vs_cpt_seed({SEED})"
-    )
+    fig.savefig(r"first_task\2\plots\bootstrap_vs_cpt.png")
 
 
 def bootstrap_skewness(
@@ -265,9 +263,7 @@ def bootstrap_skewness(
     # not the best solution, but...
     ax.text(-2, 0.4, f"F_emp_skew(1) = {round(F_emp(np.ones(1))[0], 2)}")
 
-    fig.savefig(
-        rf"first_task\2\plots\bootstrap_skewness\skewness_seed({SEED})"
-    )
+    fig.savefig(r"first_task\2\plots\bootstrap_skewness")
 
 
 def bootstrap_median(
@@ -306,9 +302,7 @@ def bootstrap_median(
 
     ax.legend()
 
-    fig.savefig(
-        rf"first_task\2\plots\bootstrap_median\median_seed({SEED})"
-    )
+    fig.savefig(r"first_task\2\plots\bootstrap_median")
 
 
 def main():
