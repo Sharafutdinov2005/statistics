@@ -94,4 +94,7 @@ class LinearRegression:
     ) -> np.ndarray:
         if self._beta is None or self._bias is None:
             raise RuntimeError("Model is unfitted!")
-        return (np.concat((self._beta, [self._bias])) if self._fit_bias else self._beta)
+        return (
+            np.concat((self._beta, [self._bias])) if self._fit_bias else
+            self._beta
+        )
